@@ -1,0 +1,12 @@
+2020-04-01
+Taiwangun      408.80
+Gunfire        366.89 <--BESTPRICE
+Azteko         394.51
+RedBeret       425.91
+TanieMilitaria 453.38
+2020-04-01
+Taiwangun      408.80 NOCHANGE
+Gunfire        366.89 NOCHANGE <--BESTPRICE
+Azteko         394.51 NOCHANGE
+RedBeret       425.91 NOCHANGE
+TanieMilitaria 453.38 NOCHANGE
