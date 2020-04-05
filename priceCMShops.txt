@@ -10,3 +10,15 @@ Gunfire        366.89 NOCHANGE <--BESTPRICE
 Azteko         394.51 NOCHANGE
 RedBeret       425.91 NOCHANGE
 TanieMilitaria 453.38 NOCHANGE
+2020-04-03
+Taiwangun      408.80 NOCHANGE
+Gunfire        366.89 NOCHANGE <--BESTPRICE
+Azteko         394.51 NOCHANGE
+RedBeret       404.61 ---
+TanieMilitaria 453.38 NOCHANGE
+2020-04-04
+Taiwangun      408.80 NOCHANGE
+Gunfire        366.89 NOCHANGE <--BESTPRICE
+Azteko         394.51 NOCHANGE
+RedBeret       425.91 +++
+TanieMilitaria 453.38 NOCHANGE
