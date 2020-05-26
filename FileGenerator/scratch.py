@@ -3,7 +3,7 @@ alpha = 'abcdefghijklmnopqrstuwvxyz'
 #i = 0
 j = 1
 new_string = ''
-for i in range(10):
+for i in range(100):
     x = random.randint(5,15)
     list = []
     while(j < x):
