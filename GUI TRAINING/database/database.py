@@ -74,7 +74,8 @@ def delete():
     conn = sqlite3.connect("addressBook.db")
     # create cursor
     cursor = conn.cursor()
-
+    print(deleteBox.get())
+    print(type(deleteBox.get()))
     cursor.execute("DELETE from address WHERE oid=" + deleteBox.get())
     deleteBox.delete(0, END)
 
@@ -82,7 +83,6 @@ def delete():
     conn.commit()
     # close
     conn.close()
-
 
 
 def edit():
