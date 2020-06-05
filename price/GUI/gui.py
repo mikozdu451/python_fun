@@ -9,7 +9,12 @@ import datetime
 import re
 import matplotlib.pyplot as plt
 from PIL import Image, ImageTk
-from tkinter import filedialog
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+import os.path
 import os
 
 root = Tk()
@@ -253,6 +258,9 @@ def clear():
     taniemilitaria_in.destroy()
     submit_button.destroy()
     edit_button.destroy()
+    photo.destroy()
+    email_label.destroy()
+    email_entry.destroy()
 
 
 def clear_edit():
@@ -457,19 +465,63 @@ def generate_report():
 def display_report():
     global photo
     global img
+    photo.destroy()
     product_name_display = str(list_box.get(ANCHOR)).split()[1] + "Graph.jpg"
     img = ImageTk.PhotoImage(Image.open(product_name_display).resize((440, 370), Image.ANTIALIAS))
     photo = Label(master=root, image=img)
     photo.grid(row=1, column=1, columnspan=3, rowspan=999)
-    # product_name_display = str(list_box.get(ANCHOR)).split()[1] + "Graph.jpg"
-    # my_canvas = Canvas(root, width=440, height=370)
-    # my_canvas.grid(row=1, column=1, columnspan=3, rowspan=999)
-    # img = ImageTk.PhotoImage(Image.open(product_name_display))
-    # photo = Label(root, image=img)
-    # photo.grid(row=1, column=1, columnspan=3, rowspan=999)
+
 
 def send_report():
-    return
+    global email_label
+    global email_entry
+    global email_send
+    email_label = Label(root, text="Please input your email", width=21, pady=10)
+    email_entry = Entry(root, width=21, bd=5)
+    email_send = Button(root, text="Send", width=21, command=send_email, pady=10)
+    email_label.grid(row=5, column=0)
+    email_entry.grid(row=6, column=0)
+    email_send.grid(row=7, column=0)
+
+
+def send_email():
+    global email_entry
+    name = str(list_box.get(ANCHOR)).split()[1]
+    x = os.getcwd() + '\\' + name + 'Graph.jpg'
+    email = 'spiker.python@gmail.com'
+    password = 'spiker321!'
+    send_to_email = email_entry.get()
+    subject = 'Product report'
+    message = 'Product report for item {}'.format(name)
+    file_location = x
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = email
+        msg['To'] = send_to_email
+        msg['Subject'] = subject
+
+        msg.attach(MIMEText(message, 'plain'))
+
+        # Setup the attachment
+        filename = os.path.basename(file_location)
+        attachment = open(file_location, "rb")
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+
+        # Attach the attachment to the MIMEMultipart object
+        msg.attach(part)
+
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(email, password)
+        text = msg.as_string()
+        server.sendmail(email, send_to_email, text)
+        server.quit()
+        messagebox.showinfo("Email sender", "Email has been sent successfully!")
+    except:
+        messagebox.showerror("Email sender", "Unable to send email!")
 
 
 def start_click():
@@ -559,6 +611,9 @@ edit_button = Button(root, text="Edit product", command=submit, bg="green")
 # Image
 img = ImageTk.PhotoImage(Image.open("cart.ico").resize((440, 370), Image.ANTIALIAS))
 photo = Label(master=root, image=img)
-
+# Email
+email_label = Label(root, text="Please input your email", width=21, pady=10)
+email_entry = Entry(root, width=21)
+email_send = Button(root, text="Send", width=21, command=send_email, pady=10)
 show()
 root.mainloop()
