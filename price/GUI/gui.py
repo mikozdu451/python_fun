@@ -243,6 +243,7 @@ def clear():
     button_1.destroy()
     button_2.destroy()
     button_3.destroy()
+    button_4.destroy()
     menu_label.destroy()
     product_name.destroy()
     taiwangun_name.destroy()
@@ -261,6 +262,7 @@ def clear():
     photo.destroy()
     email_label.destroy()
     email_entry.destroy()
+    email_send.destroy()
 
 
 def clear_edit():
@@ -520,6 +522,7 @@ def send_email():
         server.sendmail(email, send_to_email, text)
         server.quit()
         messagebox.showinfo("Email sender", "Email has been sent successfully!")
+        email_entry.delete(0, END)
     except:
         messagebox.showerror("Email sender", "Unable to send email!")
 
@@ -531,8 +534,8 @@ def start_click():
     global button_3
     global button_4
     clear()
-    products_label = Label(root, text="Compare menu", width=22)
-    products_label.grid(row=0, column=0)
+    menu_label = Label(root, text="Compare menu", width=22)
+    menu_label.grid(row=0, column=0)
     button_1 = Button(root, text="Start compare", width=21, pady=10, command=start_compare)
     button_1.grid(row=1, column=0)
     button_2 = Button(root, text="Generate report", width=21, pady=10, command=generate_report)
@@ -564,10 +567,49 @@ def manage_click():
 
 def help_click():
     clear()
+    global products_label
+    products_label = Label(root, text="Help", width=22)
+    products_label.grid(row=0, column=0)
 
 
-def set_click():
+def send_feedback():
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.ehlo()
+        server.starttls()
+        server.ehlo()
+        #spiker321!
+        server.login('spiker.python@gmail.com', 'spiker321!')
+        date = datetime.date.today()
+        headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'}
+        page = requests.get('https://weather.com/weather/today/l/50.12,18.96?par=google&temp=c', headers=headers)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        subject = "Review"
+        body = feedback_box.get("1.0", END)
+        msg = f"Subject: {subject}\n\n{body}"
+        server.sendmail('spiker.python@gmail.com', 'spiker.python@gmail.com', msg)
+        server.quit()
+        feedback_box.delete("1.0", END)
+        messagebox.showinfo("Feedback", "Thank you for your feedback!")
+    except:
+        messagebox.showerror("Feedback", "Sorry something went wrong")
+
+
+def fed_click():
+    global menu_label
+    global inform_label
+    global feedback_box
+    global send_feedback_button
     clear()
+    menu_label = Label(root, text="Feedback", width=22)
+    menu_label.grid(row=0, column=0)
+    inform_label = Label(root, text="Please leave some feedback! It will be automatically send to us!", justify='left')
+    inform_label.grid(row=1, column=0, columnspan=4)
+    feedback_box = Text(root, height=19, width=70, pady=3)
+    feedback_box.grid(row=2, column=0, columnspan=4, rowspan=999)
+    send_feedback_button = Button(root, text="Send", pady=5, command=send_feedback)
+    send_feedback_button.grid(row=1002, column=0, columnspa=4)
 
 
 # Main menu
@@ -579,7 +621,7 @@ manage_button = Button(root, text="Manage products", width=20, command=manage_cl
 manage_button.grid(row=0, column=2)
 help_button = Button(root, text="Help", width=20, command=help_click)
 help_button.grid(row=0, column=3)
-settings_button = Button(root, text="Settings", width=20, command=set_click)
+settings_button = Button(root, text="Feedback", width=20, command=fed_click)
 settings_button.grid(row=0, column=4)
 exit_button = Button(root, text="Exit", command=root.quit, width=20)
 exit_button.grid(row=0, column=5)
@@ -609,11 +651,18 @@ list_box.grid(row=1, column=4, rowspan=9000, columnspan=2)
 # Edit button
 edit_button = Button(root, text="Edit product", command=submit, bg="green")
 # Image
-img = ImageTk.PhotoImage(Image.open("cart.ico").resize((440, 370), Image.ANTIALIAS))
+img = ImageTk.PhotoImage(Image.open("mainmenu.jpg").resize((600, 380), Image.ANTIALIAS))
 photo = Label(master=root, image=img)
+photo.grid(row=1, column=0, columnspan=4, rowspan=999)
 # Email
 email_label = Label(root, text="Please input your email", width=21, pady=10)
 email_entry = Entry(root, width=21)
 email_send = Button(root, text="Send", width=21, command=send_email, pady=10)
+# Feedback
+inform_label = Label(root, text="Please leave some feedback! It will be automatically send to us!", anchor='w', justify='left')
+products_label = Label(root, text="Feedback", width=22)
+feedback_box = Text(root, height=19, width=70, pady=3)
+send_feedback_button = Button(root, text="Send", pady=5, command=send_feedback)
+
 show()
 root.mainloop()
