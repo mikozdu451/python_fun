@@ -1,0 +1,54 @@
+2020-06-05 01:31:40.694108
+Taiwangun      389.00 <--BESTPRICE
+Gunfire        394.51
+Azteko         394.51
+RedBeret       425.91
+TanieMilitaria 436.39
+2020-06-05 01:49:26.369742
+Taiwangun      389.00 NOCHANGE
+Gunfire        394.51 NOCHANGE
+Azteko         394.51 NOCHANGE
+RedBeret       246.15 --- <--BESTPRICE
+TanieMilitaria 436.39 NOCHANGE
+2020-06-05 01:50:07.929063
+Taiwangun      389.00 NOCHANGE
+Gunfire        394.51 NOCHANGE
+Azteko         394.51 NOCHANGE
+RedBeret       246.15 NOCHANGE <--BESTPRICE
+TanieMilitaria 436.39 NOCHANGE
+2020-06-05 01:51:05.549529
+Taiwangun      389.00 NOCHANGE
+Gunfire        394.51 NOCHANGE
+Azteko         394.51 NOCHANGE
+RedBeret       246.15 NOCHANGE <--BESTPRICE
+TanieMilitaria 436.39 NOCHANGE
+2020-06-05 11:25:41.880690
+Taiwangun      389.00 NOCHANGE
+Gunfire        394.51 NOCHANGE
+Azteko         394.51 NOCHANGE
+RedBeret       246.15 NOCHANGE <--BESTPRICE
+TanieMilitaria 436.39 NOCHANGE
+2020-06-05 11:31:48.615793
+Taiwangun      389.00 NOCHANGE <--BESTPRICE
+Gunfire        394.51 NOCHANGE
+Azteko         394.51 NOCHANGE
+RedBeret       425.91 +++
+TanieMilitaria 436.39 NOCHANGE
+2020-06-05 11:33:38.760907
+Taiwangun      389.00 NOCHANGE <--BESTPRICE
+Gunfire        394.51 NOCHANGE
+Azteko         394.51 NOCHANGE
+RedBeret       425.91 NOCHANGE
+TanieMilitaria 436.39 NOCHANGE
+2020-06-05 11:40:02.989329
+Taiwangun      389.00 NOCHANGE <--BESTPRICE
+Gunfire        394.51 NOCHANGE
+Azteko         394.51 NOCHANGE
+RedBeret       425.91 NOCHANGE
+TanieMilitaria 436.39 NOCHANGE
+2020-06-05 13:55:41.828775
+Taiwangun      389.00 NOCHANGE <--BESTPRICE
+Gunfire        394.51 NOCHANGE
+Azteko         394.51 NOCHANGE
+RedBeret       425.91 NOCHANGE
+TanieMilitaria 436.39 NOCHANGE

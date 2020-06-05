@@ -1,6 +1,16 @@
 from tkinter import *
 from tkinter import messagebox
 import sqlite3
+from typing import List
+import time
+import requests
+from bs4 import BeautifulSoup
+import datetime
+import re
+import matplotlib.pyplot as plt
+from PIL import Image, ImageTk
+from tkinter import filedialog
+import os
 
 root = Tk()
 root.title("PriceCompare V0.8")
@@ -8,8 +18,9 @@ root.geometry("910x400")
 root.iconbitmap("cart.ico")
 
 
-def edit(ID):
-    result = messagebox.askokcancel("Edit box", "Are you sure you want to edit product?\nIf you change the name of the products all the files with the previous name will no longer be available!")
+def edit(idx):
+    result = messagebox.askokcancel("Edit box",
+                                    "Are you sure you want to edit product?\nIf you change the name of the products all the files with the previous name will no longer be available!")
     if result:
         conn = sqlite3.connect("product_book.db")
         # Create a cursor
@@ -23,15 +34,15 @@ def edit(ID):
         tm_link = :tm_link
         
         WHERE oid =:oid""",
-        {
-            'name_product': name_in.get(),
-            'tg_link': taiwangun_in.get(),
-            'gf_link': gunfire_in.get(),
-            'az_link': azteko_in.get(),
-            'rb_link': redberet_in.get(),
-            'tm_link': taniemilitaria_in.get(),
-            'oid': ID
-        })
+                  {
+                      'name_product': name_in.get(),
+                      'tg_link': taiwangun_in.get(),
+                      'gf_link': gunfire_in.get(),
+                      'az_link': azteko_in.get(),
+                      'rb_link': redberet_in.get(),
+                      'tm_link': taniemilitaria_in.get(),
+                      'oid': idx
+                  })
         conn.commit()
         conn.close()
     else:
@@ -57,7 +68,6 @@ def edit_product():
     conn = sqlite3.connect("product_book.db")
     # Create a cursor
     c = conn.cursor()
-    x = 1
     c.execute("SELECT *, oid FROM products WHERE oid=" + record_id)
     records = c.fetchall()
 
@@ -98,7 +108,8 @@ def edit_product():
 
 
 def remove_product():
-    result = messagebox.askyesno("Delete", "Are you sure you want to delete item: {}?".format(str(list_box.get(ANCHOR)).split()[-1]))
+    result = messagebox.askyesno("Delete", "Are you sure you want to delete item: {}?".format(
+        str(list_box.get(ANCHOR)).split()[-1]))
     if result:
         to_delete = str(list_box.get(ANCHOR)).split()[0]
 
@@ -154,14 +165,15 @@ def submit():
 
         # Add to table
         c.execute("INSERT INTO products VALUES (:name_product, :tg_link, :gf_link, :az_link, :rb_link, :tm_link)",
-                {
-                    'name_product': name_in.get(),
-                    'tg_link': taiwangun_in.get(),
-                    'gf_link': gunfire_in.get(),
-                    'az_link': azteko_in.get(),
-                    'rb_link': redberet_in.get(),
-                    'tm_link': taniemilitaria_in.get(),
-                })
+
+                  {
+                      'name_product': name_in.get(),
+                      'tg_link': taiwangun_in.get(),
+                      'gf_link': gunfire_in.get(),
+                      'az_link': azteko_in.get(),
+                      'rb_link': redberet_in.get(),
+                      'tm_link': taniemilitaria_in.get(),
+                  })
 
         # Commit
         conn.commit()
@@ -261,12 +273,200 @@ def clear_edit():
 
 
 def start_compare():
-    return
+    record_id = str(list_box.get(ANCHOR)).split()[0]
+    # print(record_id)
+    # create a database
+    conn = sqlite3.connect("product_book.db")
+    # create cursor
+    c = conn.cursor()
+
+    c.execute("SELECT *, oid FROM products WHERE oid=" + record_id)
+    holder = c.fetchall()
+    # commit
+    # print(holder)
+    conn.commit()
+    # close
+    conn.close()
+
+    # print("Waking up...")
+    # print("Establishing connection for all items:")
+    try:
+        name_file = holder[0][0] + ".txt"
+        shop_list = ["Taiwangun     ", "Gunfire       ", "Azteko        ", "RedBeret      ", "TanieMilitaria"]
+        price_list: List = []
+        url1 = holder[0][1]
+        url2 = holder[0][2]
+        url3 = holder[0][3]
+        url4 = holder[0][4]
+        url5 = holder[0][5]
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'}
+        page = requests.get(url1, headers=headers)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        price1_convert = soup.find(class_="price").get_text().strip().replace(",", ".")
+        price1_convert = float(re.sub("[^0-9^.]", "", price1_convert))
+        price1_convert = ("{:3.2f}".format(price1_convert))
+        # print(price1_convert)
+        price_list.append(price1_convert)
+        # print("1: Positive")
+        page2 = requests.get(url2, headers=headers)
+        soup2 = BeautifulSoup(page2.content, 'html.parser')
+        price2_convert = float(soup2.find(class_="projector_price_value").get_text().strip().split()[0].replace(",", "."))
+        price2_convert = ("{:3.2f}".format(price2_convert))
+        # print(price2_convert)
+        price_list.append(price2_convert)
+        # print("2: Positive")
+        # AZTEKO
+        page3 = requests.get(url3, headers=headers)
+        soup3 = BeautifulSoup(page3.content, 'html.parser')
+        price3_convert = float(soup3.find(id="CenaGlownaProduktuBrutto").get_text().strip().split()[1].replace(",", "."))
+        price3_convert = ("{:3.2f}".format(price3_convert))
+        # print(price3_convert)
+        price_list.append(price3_convert)
+        # print("3: Positive")
+        # RED
+        page4 = requests.get(url4, headers=headers)
+        soup4 = BeautifulSoup(page4.content, 'html.parser')
+        price4_1 = soup4.find(class_="price_1").get_text().replace(",", ".")
+        price4_2 = soup4.find(class_="price_2").get_text()
+        price4_convert = float(price4_1 + price4_2)
+        price4_convert = "{:3.2f}".format(price4_convert)
+        price_list.append(price4_convert)
+        # print("4: Positive")
+        # TANIE
+        page5 = requests.get(url5, headers=headers)
+        soup5 = BeautifulSoup(page5.content, 'html.parser')
+        price5_convert = float(soup5.find(class_="box-product-price-netto").get_text().split()[0].replace(",", "."))
+        # print(price5_convert)
+        price5_convert = ("{:3.2f}".format(price5_convert))
+        price_list.append(price5_convert)
+        # print("5: Positive")
+        # print("Starting...")
+        try:
+
+            # print("Searching for file...")
+            f = open(name_file)
+        except FileNotFoundError:
+            # print("File not found...")
+            f = open(name_file, "w+")
+            # print("Creating file...")
+        finally:
+            f.close()
+            # print("Opening file...")
+            f = open(name_file, "r")
+            if f:
+                line_holder = []
+                i = 1
+                for line in f:
+                    if i in range(1, 500, 6):
+                        line_holder = []
+                        i += 1
+                    else:
+                        line_holder.append(line)
+                        i += 1
+
+                        # print(line_holder)
+                if line_holder:
+                    for i in range(len(line_holder)):
+                        # print(line_holder[i])
+                        if str(price_list[i]) in line_holder[i]:
+                            if "NOCHANGE" not in line_holder[i]:
+                                line_holder[i] = line_holder[i][0:21].replace("\n", "") + " NOCHANGE"
+                        else:
+                            value = float(line_holder[i][15:21])
+                            if float(price_list[i]) > value:
+                                line_holder[i] = shop_list[i] + " " + price_list[i] + " +++"
+                            else:
+                                line_holder[i] = shop_list[i] + " " + price_list[i] + " ---"
+                else:
+                    for i in range(len(shop_list)):
+                        line_holder.append(shop_list[i] + " " + price_list[i])
+                # print(line_holder)
+                best_price = 0
+                for i in range(len(line_holder)):
+                    if best_price == 0:
+                        best_price = line_holder[i][15:21]
+                    else:
+                        if price_list[i] < best_price:
+                            best_price = price_list[i]
+
+                for i in range(len(line_holder)):
+                    line_holder[i] = line_holder[i].replace(" <--BESTPRICE", "")
+                    if str(best_price) in line_holder[i]:
+                        line_holder[i] = line_holder[i].replace("\n", "") + " <--BESTPRICE"
+
+                f.close()
+                f = open(name_file, "a")
+                print(str(datetime.datetime.today()), file=f, flush=True)
+                for i in range(len(line_holder)):
+                    print(line_holder[i].replace("\n", ""), file=f, flush=True)
+                f.close()
+                messagebox.showinfo("Compare info", "Comparing prices finished")
+    except:
+        messagebox.showerror("Connection error", "Unable to compare product!\nCheck your internet connection or links to products")
+        return
+
+
+def generate_report():
+    name = str(list_box.get(ANCHOR)).split()[1]+".txt"
+    f = open(name, "r")
+    prices = {'Taiwangun': [], 'Gunfire': [], 'Azteko': [], 'Redberet': [], 'Taniemilitaria': []}
+    colors = {'Taiwangun': 'black', 'Gunfire': '#f35500', 'Azteko': '#99840e', 'Redberet': 'red', 'Taniemilitaria': 'green'}
+    if f:
+        savefile = name.replace(".txt", "") + "Graph.jpg"
+        i = 1
+        dates = []
+        for line in f:
+            if i in range(1, 500, 6):
+                x = line[0:19]
+                dates.append(x)
+                i += 1
+            elif i in range(2, 500, 6):
+                prices['Taiwangun'].append(float(line[15:21]))
+                i += 1
+            elif i in range(3, 500, 6):
+                prices['Gunfire'].append(float(line[15:21]))
+                i += 1
+            elif i in range(4, 500, 6):
+                prices['Azteko'].append(float(line[15:21]))
+                i += 1
+            elif i in range(5, 500, 6):
+                prices['Redberet'].append(float(line[15:21]))
+                i += 1
+            elif i in range(6, 500, 6):
+                prices['Taniemilitaria'].append(float(line[15:21]))
+                i += 1
+        for key in prices:
+            plt.plot(dates, prices[key], label=key, color=colors[key])
+            plt.xticks(rotation=90)
+        plt.xlabel('Date')
+        plt.ylabel('Price')
+        plt.title(name.replace(".txt", ""))
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(savefile)
+        plt.cla()
+        f.close()
+        messagebox.showinfo("Report generator", "Report generated successfully for product: {}!".format(str(list_box.get(ANCHOR)).split()[1]))
+        # print("Graph created successfully!")
+    else:
+        # print("File can't be found!")
+        messagebox.showerror("Report generator", "Program wasn't able to generate report!\nPlease check if you had compared prices for product: {}".format(str(list_box.get(ANCHOR)).split()[1]))
 
 
 def display_report():
-    return
-
+    global photo
+    global img
+    product_name_display = str(list_box.get(ANCHOR)).split()[1] + "Graph.jpg"
+    img = ImageTk.PhotoImage(Image.open(product_name_display).resize((440, 370), Image.ANTIALIAS))
+    photo = Label(master=root, image=img)
+    photo.grid(row=1, column=1, columnspan=3, rowspan=999)
+    # product_name_display = str(list_box.get(ANCHOR)).split()[1] + "Graph.jpg"
+    # my_canvas = Canvas(root, width=440, height=370)
+    # my_canvas.grid(row=1, column=1, columnspan=3, rowspan=999)
+    # img = ImageTk.PhotoImage(Image.open(product_name_display))
+    # photo = Label(root, image=img)
+    # photo.grid(row=1, column=1, columnspan=3, rowspan=999)
 
 def send_report():
     return
@@ -277,15 +477,18 @@ def start_click():
     global button_1
     global button_2
     global button_3
+    global button_4
     clear()
     products_label = Label(root, text="Compare menu", width=22)
     products_label.grid(row=0, column=0)
     button_1 = Button(root, text="Start compare", width=21, pady=10, command=start_compare)
     button_1.grid(row=1, column=0)
-    button_2 = Button(root, text="Display report", width=21, pady=10, command=display_report)
+    button_2 = Button(root, text="Generate report", width=21, pady=10, command=generate_report)
     button_2.grid(row=2, column=0)
-    button_3 = Button(root, text="Send report", width=21, pady=10, command=send_report)
+    button_3 = Button(root, text="Display report", width=21, pady=10, command=display_report)
     button_3.grid(row=3, column=0)
+    button_4 = Button(root, text="Send report", width=21, pady=10, command=send_report)
+    button_4.grid(row=4, column=0)
     show()
 
 
@@ -332,6 +535,7 @@ exit_button.grid(row=0, column=5)
 button_1 = Button(root, text="button1")
 button_2 = Button(root, text="button2")
 button_3 = Button(root, text="button3")
+button_4 = Button(root, text="button4")
 # Shop name labels
 product_name = Label(root, text="Product name", pady=10)
 taiwangun_name = Label(root, text="Taiwangun", pady=10)
@@ -352,6 +556,9 @@ list_box = Listbox(root, width=50, height=100, selectmode=SINGLE, bg="#cccccc")
 list_box.grid(row=1, column=4, rowspan=9000, columnspan=2)
 # Edit button
 edit_button = Button(root, text="Edit product", command=submit, bg="green")
+# Image
+img = ImageTk.PhotoImage(Image.open("cart.ico").resize((440, 370), Image.ANTIALIAS))
+photo = Label(master=root, image=img)
 
 show()
 root.mainloop()
