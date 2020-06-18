@@ -50,8 +50,7 @@ def send_mail():
     subject = f"Beautiful day {str(date)[6:]}!"
     body = f"Good morning!\nIt's {days[datetime.datetime.today().weekday()]}, {str(date)[8:]} of {months[int(str(datetime.datetime.today())[5:7])-1]}!\nWeather for {location}: Highest temperature is {temp_high}, chance of rain is {rain_chance}.\n{final}"
     msg = f"Subject: {subject}\n\n{body}"
-    #Katarzyna_sek@interia.eu
-    server.sendmail('spiker.python@gmail.com', 'krzysztofzduniak2@gmail.com', msg)
+    server.sendmail('spiker.python@gmail.com', 'spiker.python@gmail.com', msg)
     print("Email sent!")
     server.quit()
 
